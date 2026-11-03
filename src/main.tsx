@@ -1,3 +1,4 @@
+import { AppInstall } from './AppInstall';
 import { QuickNote } from './QuickNote';
 import { TimerPanel } from './TimerPanel';
 import React, { useEffect, useRef, useState } from 'react';
@@ -21,7 +22,7 @@ function App(){
  const stats=today(s,now); const isFocus=s.timer.phase==='focus'; const visible=s.notes.filter(n=>filter==='전체'||n.category===filter); const nextGoal=!(s.timer.status==='idle'&&isFocus);
  const update=(patch:Partial<State>)=>void transact(base=>({...base,...patch}));
  const applySettings=()=>{if(!validMinutes(form.focus)||!validMinutes(form.break)){setError('시간은 1~1440 사이의 양의 정수(분)로 입력해 주세요.');return;} void transact(base=>{const settings={...base.settings,focus:Number(form.focus),break:Number(form.break)}; const t=base.timer;return {...base,settings,timer:t.status==='idle'?{...t,duration:settings[t.phase]*60000,remaining:settings[t.phase]*60000}:t};});setError('');setSettingsOpen(false);};
- return <><header className="header"><a className="brand" href="./"><span className="logo"><Leaf size={20}/></span>잠깐 집중<span className="brand-dot">.</span></a><div className="header-right"><span className="local-label"><span/>나만의 작은 집중 공간</span><button className="icon-btn" aria-label="설정 열기" onClick={()=>{setForm({focus:String(s.settings.focus),break:String(s.settings.break)});setSettingsOpen(true);}}><SettingsIcon size={21}/></button></div></header>
+ return <><header className="header"><a className="brand" href="./"><span className="logo"><Leaf size={20}/></span>잠깐 집중<span className="brand-dot">.</span></a><div className="header-right"><AppInstall/><span className="local-label"><span/>나만의 작은 집중 공간</span><button className="icon-btn" aria-label="설정 열기" onClick={()=>{setForm({focus:String(s.settings.focus),break:String(s.settings.break)});setSettingsOpen(true);}}><SettingsIcon size={21}/></button></div></header>
  <main><section className="intro"><span className="eyebrow">ONE THING AT A TIME</span><h1>지금은, 하나에만 집중해요.</h1><p>떠오르는 생각은 잠깐 내려놓고, 나의 속도로.</p></section>
  {storageWarning&&<p role="alert" className="warning">{storageWarning}</p>}{s.notice&&<div className="notice" role="status"><Leaf size={18}/><span>{s.notice}</span><button aria-label="안내 닫기" onClick={()=>update({notice:''})}><X size={16}/></button></div>}
  <div className="workspace"><section className="focus-column"><div className="goal"><label htmlFor="goal"><span className="small-number">01</span>{nextGoal?'다음에는 무엇에 집중할까요?':'무엇에 집중할까요?'}<span className="optional">선택</span></label><input id="goal" placeholder="예: 책 한 챕터 읽기" value={s.nextGoal} maxLength={200} onChange={e=>update({nextGoal:e.target.value})}/>{s.timer.goal&&s.timer.status!=='idle'&&<p className="current-goal">이번 목표 · {s.timer.goal}</p>}</div>
